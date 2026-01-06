@@ -1,6 +1,6 @@
 <!-- ========================================
-     CHARLOTTE CHATBOT FOR SHOPIFY - UPDATED VERSION
-     With Product Image & Link Display Support
+     CHARLOTTE CHATBOT FOR SHOPIFY - WITH SESSION MANAGEMENT
+     With Product Image & Link Display + Multi-User Support
      Paste this ENTIRE code BEFORE </body> tag
      ======================================== -->
 
@@ -318,7 +318,7 @@
     letter-spacing: 0.02em;
   }
   
-  /* NEW: Product Card Styles */
+  /* Product Card Styles */
   .charlotte-product-card {
     background: var(--off-white);
     border: 2px solid var(--light-border);
@@ -550,8 +550,57 @@
 <script>
 (function() {
   // ⬇️⬇️⬇️ UPDATE YOUR WEBHOOK URL HERE ⬇️⬇️⬇️
-  const WEBHOOK = 'https://fwhome.app.n8n.cloud/webhook/9f31076e-4120-4269-95b3-e6e09c426d32';
+  const WEBHOOK = 'https://fwhome.app.n8n.cloud/webhook-test/4d77e3ce-f91b-45e9-9489-c81bb6e49009';
   // ⬆️⬆️⬆️ UPDATE YOUR WEBHOOK URL HERE ⬆️⬆️⬆️
+  
+  // ============================================
+  // SESSION MANAGEMENT
+  // ============================================
+  
+  function generateSessionId() {
+    return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  }
+  
+  function getSessionId() {
+    let sessionId = localStorage.getItem('charlotte_session_id');
+    
+    if (!sessionId) {
+      sessionId = generateSessionId();
+      localStorage.setItem('charlotte_session_id', sessionId);
+      localStorage.setItem('charlotte_session_created', new Date().toISOString());
+      console.log('✨ New session created:', sessionId);
+    } else {
+      console.log('📌 Existing session:', sessionId);
+    }
+    
+    return sessionId;
+  }
+  
+  function clearSession() {
+    localStorage.removeItem('charlotte_session_id');
+    localStorage.removeItem('charlotte_session_created');
+    localStorage.removeItem('charlotte_message_count');
+    console.log('🗑️ Session cleared');
+  }
+  
+  // Debug helper - accessible from browser console
+  window.charlotteDebug = {
+    getSession: getSessionId,
+    clearSession: clearSession,
+    info: function() {
+      console.log('═══════════════════════════════');
+      console.log('Charlotte Session Info');
+      console.log('═══════════════════════════════');
+      console.log('Session ID:', getSessionId());
+      console.log('Created:', localStorage.getItem('charlotte_session_created'));
+      console.log('Messages:', localStorage.getItem('charlotte_message_count') || 0);
+      console.log('═══════════════════════════════');
+    }
+  };
+  
+  // ============================================
+  // CHAT FUNCTIONALITY
+  // ============================================
   
   const trigger = document.getElementById('charlotteTrigger');
   const container = document.getElementById('charlotteContainer');
@@ -565,6 +614,9 @@
   
   document.getElementById('initialTime').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
   
+  // Initialize session on page load
+  getSessionId();
+  
   function toggle() {
     isOpen = !isOpen;
     container.classList.toggle('open');
@@ -575,7 +627,7 @@
   trigger.addEventListener('click', toggle);
   closeBtn.addEventListener('click', toggle);
   
-  // NEW: Function to create product card HTML
+  // Function to create product card HTML
   function createProductCard(product) {
     return `
       <div class="charlotte-product-card">
@@ -628,6 +680,12 @@
     
     messages.appendChild(div);
     messages.scrollTop = messages.scrollHeight;
+    
+    // Track message count
+    if (role === 'user') {
+      const count = parseInt(localStorage.getItem('charlotte_message_count') || '0');
+      localStorage.setItem('charlotte_message_count', count + 1);
+    }
   }
   
   async function send() {
@@ -644,11 +702,17 @@
     input.disabled = true;
     messages.scrollTop = messages.scrollHeight;
     
+    // Get session ID
+    const sessionId = getSessionId();
+    
     try {
       const res = await fetch(WEBHOOK, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({message: text})
+        body: JSON.stringify({
+          message: text,
+          sessionId: sessionId  // Include session ID
+        })
       });
       
       if (!res.ok) throw new Error('Network error');
