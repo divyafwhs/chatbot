@@ -1,6 +1,6 @@
 <!-- ========================================
-     CHARLOTTE CHATBOT FOR SHOPIFY - WITH SESSION MANAGEMENT
-     With Product Image & Link Display + Multi-User Support
+     CHARLOTTE CHATBOT FOR SHOPIFY - WITH SESSION MANAGEMENT (FIXED)
+     With Product Image & Link Display + Multi-User Support + Enhanced Debugging
      Paste this ENTIRE code BEFORE </body> tag
      ======================================== -->
 
@@ -615,7 +615,8 @@
   document.getElementById('initialTime').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
   
   // Initialize session on page load
-  getSessionId();
+  const initialSessionId = getSessionId();
+  console.log('🚀 Charlotte initialized with session:', initialSessionId);
   
   function toggle() {
     isOpen = !isOpen;
@@ -705,28 +706,53 @@
     // Get session ID
     const sessionId = getSessionId();
     
+    // Create payload
+    const payload = {
+      message: text,
+      sessionId: sessionId,
+      timestamp: new Date().toISOString()
+    };
+    
+    // Enhanced debugging
+    console.log('📤 Sending to webhook:', WEBHOOK);
+    console.log('📦 Payload:', payload);
+    console.log('🔑 Session ID being sent:', sessionId);
+    
     try {
       const res = await fetch(WEBHOOK, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          message: text,
-          sessionId: sessionId  // Include session ID
-        })
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
       });
       
-      if (!res.ok) throw new Error('Network error');
+      console.log('📡 Response status:', res.status);
+      console.log('📡 Response headers:', Object.fromEntries(res.headers.entries()));
+      
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error('❌ Error response:', errorText);
+        throw new Error(`Network error: ${res.status}`);
+      }
       
       const data = await res.json();
+      console.log('✅ Response data:', data);
+      
       typing.classList.add('hidden');
       
       // Extract text reply and products from response
-      const reply = data.reply || data.response || 'I received your message.';
+      const reply = data.reply || data.response || data.message || 'I received your message.';
       const products = data.products || [];
       
       addMessage(reply, 'assistant', products);
     } catch (err) {
-      console.error('Charlotte error:', err);
+      console.error('❌ Charlotte error:', err);
+      console.error('Error details:', {
+        message: err.message,
+        stack: err.stack
+      });
       typing.classList.add('hidden');
       addMessage("We're having trouble reaching the design assistant. Please try again in a moment.");
     } finally {
