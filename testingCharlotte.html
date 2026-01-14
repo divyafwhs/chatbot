@@ -660,7 +660,12 @@
       : 'Y';
     
     // Build message content
-    let messageContent = `<div class="charlotte-bubble">${content}</div>`;
+    const isHTML = /<\/?[a-z][\s\S]*>/i.test(content);
+
+let messageContent = isHTML
+  ? content
+  : `<div class="charlotte-bubble">${content}</div>`;
+
     
     // Add product cards if available
     if (products && products.length > 0 && role === 'assistant') {
