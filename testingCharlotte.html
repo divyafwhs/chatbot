@@ -59,7 +59,6 @@
       padding: 20px;
     }
 
-    /* Charlotte Chatbot Styles */
     .charlotte-chatbot-wrapper * { 
       box-sizing: border-box; 
     }
@@ -79,7 +78,6 @@
       -moz-osx-font-smoothing: grayscale;
     }
     
-    /* Chatbot Trigger */
     .charlotte-trigger {
       position: fixed;
       bottom: 2rem;
@@ -116,7 +114,6 @@
       object-fit: cover;
     }
 
-    /* Chatbot Container */
     .charlotte-container {
       position: fixed;
       bottom: 2rem;
@@ -142,7 +139,6 @@
       pointer-events: all;
     }
 
-    /* Header */
     .charlotte-header {
       background: linear-gradient(135deg, var(--reclaim-teal), var(--reclaim-teal-light));
       color: var(--off-white);
@@ -205,7 +201,6 @@
       background: rgba(255, 255, 255, 0.1);
     }
 
-    /* Messages Container */
     .charlotte-messages {
       flex: 1;
       overflow-y: auto;
@@ -229,7 +224,6 @@
       border-radius: 3px;
     }
 
-    /* Message Bubble */
     .charlotte-message {
       display: flex;
       gap: 0.75rem;
@@ -269,7 +263,7 @@
       font-weight: 700;
       font-size: 0.9rem;
       color: var(--off-white);
-      background: var(--charcoal);
+      background: var(--reclaim-teal);  /* Changed from charcoal to teal */
       flex-shrink: 0;
       overflow: hidden;
     }
@@ -301,7 +295,6 @@
       border-bottom-left-radius: 4px;
     }
 
-    /* Product Card Styles - NEW */
     .charlotte-product-card {
       background: white;
       border-radius: 12px;
@@ -371,7 +364,6 @@
       background: var(--reclaim-teal-dark);
     }
     
-    /* Bubble Content Formatting - ENHANCED */
     .charlotte-bubble p {
       margin: 0.5rem 0;
     }
@@ -433,7 +425,6 @@
       padding-left: 0.25rem;
     }
 
-    /* Typing Indicator */
     .charlotte-typing {
       display: flex;
       gap: 0.75rem;
@@ -485,7 +476,6 @@
       }
     }
 
-    /* Input Container */
     .charlotte-input-container {
       padding: 1rem 1.5rem;
       background: var(--off-white);
@@ -548,7 +538,6 @@
       cursor: not-allowed;
     }
 
-    /* Mobile Responsive */
     @media (max-width: 480px) {
       .charlotte-trigger {
         bottom: 1.5rem;
@@ -588,12 +577,10 @@
 <body>
 
   <div class="charlotte-chatbot-wrapper">
-    <!-- Trigger Button -->
     <div class="charlotte-trigger" id="charlotteTrigger">
       <img src="https://i.postimg.cc/4yhWxnWp/15._R_GREEN_CIRCLE_2x.png" alt="Charlotte">
     </div>
 
-    <!-- Chat Container -->
     <div class="charlotte-container" id="charlotteContainer">
       <div class="charlotte-header">
         <div class="charlotte-header-left">
@@ -642,39 +629,26 @@
 
   <script>
   (function() {
-    console.log('🚀 Charlotte chatbot script starting...');
+    console.log('🚀 Charlotte chatbot initialized');
     
-    // ⬇️⬇️⬇️ UPDATE YOUR WEBHOOK URL HERE ⬇️⬇️⬇️
     const WEBHOOK = 'https://fwhome.app.n8n.cloud/webhook/9f31076e-4120-4269-95b3-e6e09c426d32';
-    // ⬆️⬆️⬆️ UPDATE YOUR WEBHOOK URL HERE ⬆️⬆️⬆️
     
     // ============================================
-    // MARKDOWN PARSING FUNCTIONS - NEW
+    // MARKDOWN PARSING
     // ============================================
     
     function parseMarkdown(text) {
       if (!text) return '';
-      
-      // Convert text to string if it isn't already
       text = String(text);
       
-      // Parse bold with ** or __
+      // Parse bold
       text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-      text = text.replace(/__(.+?)__/g, '<strong>$1</strong>');
       
-      // Parse italic with * or _
-      text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
-      text = text.replace(/_(.+?)_/g, '<em>$1</em>');
+      // Parse images: ![alt](url)
+      text = text.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto; border-radius: 8px; margin: 0.75rem 0; display: block;">');
       
-      // Parse markdown images: ![alt](url)
-      text = text.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto; border-radius: 8px; margin: 0.75rem 0;">');
-      
-      // Parse markdown links: [text](url)
+      // Parse links: [text](url)
       text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-      
-      // Parse horizontal rules
-      text = text.replace(/^---$/gm, '<hr>');
-      text = text.replace(/^\*\*\*$/gm, '<hr>');
       
       // Parse line breaks
       text = text.replace(/\n/g, '<br>');
@@ -683,87 +657,87 @@
     }
     
     // ============================================
-    // PRODUCT CARD DETECTION AND PARSING - NEW
+    // PRODUCT CARD EXTRACTION - FIXED
     // ============================================
     
-    function extractProductCards(text) {
-      // Product card pattern detection
-      // Matches the format: **Product Name**\n💷 **Price:** £X\n[description]\n📏 **Dimensions:**...\n🚚 **Delivery:**...\n[View Product](url)\n![alt](img)
+    function extractProductCard(text) {
+      // Check if this looks like a product card
+      const hasProductName = /^\*\*(.+?)\*\*/.test(text);
+      const hasPrice = /💷\s*\*\*Price:\*\*\s*£([\d,]+)/.test(text);
+      const hasDimensions = /📏\s*\*\*Dimensions:\*\*/.test(text);
+      const hasDelivery = /🚚\s*\*\*Delivery:\*\*/.test(text);
       
-      const productCardPattern = /\*\*(.+?)\*\*\s*\n💷\s*\*\*Price:\*\*\s*£([\d,]+)/g;
-      const cards = [];
-      let match;
-      let lastIndex = 0;
-      let textParts = [];
-      
-      // Extract product cards
-      while ((match = productCardPattern.exec(text)) !== null) {
-        const cardStart = match.index;
-        const cardEnd = text.indexOf('---', cardStart);
-        const actualEnd = cardEnd !== -1 ? cardEnd : text.length;
+      if (hasProductName && hasPrice && (hasDimensions || hasDelivery)) {
+        // This is a product card, extract it
         
-        // Get text before this card
-        if (cardStart > lastIndex) {
-          textParts.push(text.substring(lastIndex, cardStart));
-        }
+        // Extract product name
+        const nameMatch = text.match(/^\*\*(.+?)\*\*/);
+        const name = nameMatch ? nameMatch[1].trim() : '';
         
-        // Extract card content
-        const cardContent = text.substring(cardStart, actualEnd);
+        // Extract price
+        const priceMatch = text.match(/💷\s*\*\*Price:\*\*\s*£([\d,]+)/);
+        const price = priceMatch ? priceMatch[1].trim() : '';
         
-        // Parse card components
-        const productName = match[1];
-        const price = match[2];
-        
-        // Extract description (text between price and dimensions)
-        const descMatch = cardContent.match(/£[\d,]+\s*\n\n(.+?)\n\n📏/s);
-        const description = descMatch ? descMatch[1].trim() : '';
+        // Extract description (text between price and first emoji detail)
+        const descStartIdx = text.indexOf(price) + price.length;
+        const descMatch = text.substring(descStartIdx).match(/\s+(.+?)(?=📏|🚚|\[View Product\]|$)/s);
+        const description = descMatch ? descMatch[1].trim().replace(/\*\*/g, '') : '';
         
         // Extract dimensions
-        const dimMatch = cardContent.match(/📏\s*\*\*Dimensions:\*\*\s*(.+?)\n/);
+        const dimMatch = text.match(/📏\s*\*\*Dimensions:\*\*\s*(.+?)(?=\n|🚚|$)/);
         const dimensions = dimMatch ? dimMatch[1].trim() : '';
         
         // Extract delivery
-        const delMatch = cardContent.match(/🚚\s*\*\*Delivery:\*\*\s*(.+?)(?:\n|$)/);
+        const delMatch = text.match(/🚚\s*\*\*Delivery:\*\*\s*(.+?)(?=\n|\[|$)/);
         const delivery = delMatch ? delMatch[1].trim() : '';
         
         // Extract URL
-        const urlMatch = cardContent.match(/\[View Product\]\((.+?)\)/);
-        const url = urlMatch ? urlMatch[1] : '';
+        const urlMatch = text.match(/\[View Product\]\((.+?)\)/);
+        const url = urlMatch ? urlMatch[1].trim() : '';
         
         // Extract image
-        const imgMatch = cardContent.match(/!\[([^\]]*)\]\((.+?)\)/);
-        const imgUrl = imgMatch ? imgMatch[2] : '';
-        const imgAlt = imgMatch ? imgMatch[1] : productName;
+        const imgMatch = text.match(/!\[([^\]]*)\]\((.+?)\)/);
+        const imgUrl = imgMatch ? imgMatch[2].trim() : '';
+        const imgAlt = imgMatch ? imgMatch[1].trim() : name;
         
-        cards.push({
-          name: productName,
-          price: price,
-          description: description,
-          dimensions: dimensions,
-          delivery: delivery,
-          url: url,
-          image: imgUrl,
-          imageAlt: imgAlt
-        });
+        // Extract text before product card and after
+        const cardStartIdx = text.indexOf('**' + name);
+        const beforeCard = text.substring(0, cardStartIdx).trim();
         
-        lastIndex = actualEnd + 3; // +3 for "---"
+        // Find where card ends (after image or view product link)
+        let afterCard = '';
+        if (imgMatch) {
+          const imgEndIdx = text.indexOf(imgMatch[0]) + imgMatch[0].length;
+          afterCard = text.substring(imgEndIdx).trim();
+        } else if (urlMatch) {
+          const urlEndIdx = text.indexOf(urlMatch[0]) + urlMatch[0].length;
+          afterCard = text.substring(urlEndIdx).trim();
+        }
+        
+        return {
+          isProductCard: true,
+          card: {
+            name,
+            price,
+            description,
+            dimensions,
+            delivery,
+            url,
+            image: imgUrl,
+            imageAlt: imgAlt
+          },
+          beforeText: beforeCard,
+          afterText: afterCard
+        };
       }
       
-      // Get any remaining text after last card
-      if (lastIndex < text.length) {
-        textParts.push(text.substring(lastIndex));
-      }
-      
-      return {
-        cards: cards,
-        remainingText: textParts.join('').trim()
-      };
+      return { isProductCard: false };
     }
     
     function createProductCardHTML(card) {
       return `
         <div class="charlotte-product-card">
-          ${card.image ? `<img src="${card.image}" alt="${card.imageAlt}" class="charlotte-product-image" onerror="this.style.display='none'">` : ''}
+          ${card.image ? `<img src="${card.image}" alt="${card.imageAlt}" class="charlotte-product-image" onerror="this.style.display='none';">` : ''}
           <div class="charlotte-product-info">
             <div class="charlotte-product-name">${card.name}</div>
             ${card.price ? `<div class="charlotte-product-price">£${card.price}</div>` : ''}
@@ -786,16 +760,11 @@
     
     function getSessionId() {
       let sessionId = localStorage.getItem('charlotte_session_id');
-      
       if (!sessionId) {
         sessionId = generateSessionId();
         localStorage.setItem('charlotte_session_id', sessionId);
         localStorage.setItem('charlotte_session_created', new Date().toISOString());
-        console.log('✨ New session created:', sessionId);
-      } else {
-        console.log('📌 Existing session:', sessionId);
       }
-      
       return sessionId;
     }
     
@@ -803,21 +772,15 @@
       localStorage.removeItem('charlotte_session_id');
       localStorage.removeItem('charlotte_session_created');
       localStorage.removeItem('charlotte_message_count');
-      console.log('🗑️ Session cleared');
     }
     
-    // Debug helper
     window.charlotteDebug = {
       getSession: getSessionId,
       clearSession: clearSession,
       info: function() {
-        console.log('═══════════════════════════════');
-        console.log('Charlotte Session Info');
-        console.log('═══════════════════════════════');
         console.log('Session ID:', getSessionId());
         console.log('Created:', localStorage.getItem('charlotte_session_created'));
         console.log('Messages:', localStorage.getItem('charlotte_message_count') || 0);
-        console.log('═══════════════════════════════');
       }
     };
     
@@ -836,10 +799,7 @@
     let isOpen = false, isLoading = false;
     
     document.getElementById('initialTime').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
-    
-    // Initialize session
-    const initialSessionId = getSessionId();
-    console.log('🚀 Charlotte initialized with session:', initialSessionId);
+    getSessionId();
     
     function toggle() {
       isOpen = !isOpen;
@@ -864,30 +824,32 @@
       let messageHTML = '';
       
       if (role === 'assistant') {
-        // Try to extract product cards
-        const { cards, remainingText } = extractProductCards(content);
+        // Try to extract product card
+        const result = extractProductCard(content);
         
-        // Parse remaining text for markdown
-        const parsedText = parseMarkdown(remainingText);
-        
-        // Add text bubble if there's text
-        if (parsedText.trim()) {
-          messageHTML += `<div class="charlotte-bubble">${parsedText}</div>`;
-        }
-        
-        // Add product cards
-        if (cards.length > 0) {
-          cards.forEach(card => {
-            messageHTML += createProductCardHTML(card);
-          });
-        }
-        
-        // If no cards were found but content has markdown, parse it all
-        if (cards.length === 0 && !parsedText.trim()) {
+        if (result.isProductCard) {
+          // We have a product card!
+          
+          // Add before text if exists
+          if (result.beforeText) {
+            const parsed = parseMarkdown(result.beforeText);
+            messageHTML += `<div class="charlotte-bubble">${parsed}</div>`;
+          }
+          
+          // Add product card
+          messageHTML += createProductCardHTML(result.card);
+          
+          // Add after text if exists
+          if (result.afterText) {
+            const parsed = parseMarkdown(result.afterText);
+            messageHTML += `<div class="charlotte-bubble">${parsed}</div>`;
+          }
+        } else {
+          // Not a product card, just parse as markdown
           messageHTML = `<div class="charlotte-bubble">${parseMarkdown(content)}</div>`;
         }
       } else {
-        // User messages - simple text
+        // User messages
         messageHTML = `<div class="charlotte-bubble">${content}</div>`;
       }
 
@@ -933,9 +895,6 @@
         timestamp: new Date().toISOString()
       };
       
-      console.log('📤 Sending to webhook:', WEBHOOK);
-      console.log('📦 Payload:', payload);
-      
       try {
         const res = await fetch(WEBHOOK, {
           method: 'POST',
@@ -946,25 +905,23 @@
           body: JSON.stringify(payload)
         });
         
-        console.log('📡 Response status:', res.status);
-        
         if (!res.ok) {
-          const errorText = await res.text();
-          console.error('❌ Error response:', errorText);
           throw new Error(`Network error: ${res.status}`);
         }
         
         const data = await res.json();
-        console.log('✅ Response data:', data);
-        
         typing.classList.add('hidden');
         
-        // Extract reply from various possible response formats
-        const reply = data.output || data.reply || data.response || data.message || 'I received your message.';
+        // Extract reply
+        const reply = data.output || data.reply || data.response || data.message || data.text || '';
         
-        addMessage(reply, 'assistant');
+        if (!reply || reply.trim() === '') {
+          addMessage('I received your message but had trouble formatting the response. Please try again.', 'assistant');
+        } else {
+          addMessage(reply, 'assistant');
+        }
       } catch (err) {
-        console.error('❌ Charlotte error:', err);
+        console.error('Error:', err);
         typing.classList.add('hidden');
         addMessage("I'm having trouble connecting right now. Please try again in a moment.", 'assistant');
       } finally {
@@ -987,7 +944,7 @@
       this.style.height = Math.min(this.scrollHeight, 120) + 'px';
     });
     
-    console.log('✅ Charlotte chatbot fully initialized!');
+    console.log('✅ Charlotte ready!');
   })();
   </script>
 
