@@ -1,0 +1,1070 @@
+<h2>RN Charlotte chatbot Test Page</h2>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Charlotte - Interior Design Assistant</title>
+  <style>
+    /* Wix Madefor Display Font Faces */
+    @font-face {
+      font-family: 'Wix Madefor Display';
+      src: url('https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/wixmadefordisplay/WixMadeforDisplay-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    @font-face {
+      font-family: 'Wix Madefor Display';
+      src: url('https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/wixmadefordisplay/WixMadeforDisplay-Medium.ttf') format('truetype');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    @font-face {
+      font-family: 'Wix Madefor Display';
+      src: url('https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/wixmadefordisplay/WixMadeforDisplay-SemiBold.ttf') format('truetype');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    @font-face {
+      font-family: 'Wix Madefor Display';
+      src: url('https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/wixmadefordisplay/WixMadeforDisplay-Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    @font-face {
+      font-family: 'Wix Madefor Display';
+      src: url('https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/wixmadefordisplay/WixMadeforDisplay-ExtraBold.ttf') format('truetype');
+      font-weight: 800;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Wix Madefor Display', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+
+    .charlotte-chatbot-wrapper * { 
+      box-sizing: border-box; 
+    }
+    
+    .charlotte-chatbot-wrapper {
+      --reclaim-teal: #2B6F6F;
+      --reclaim-teal-dark: #1F5353;
+      --reclaim-teal-light: #3D8585;
+      --warm-white: #F0EEE8;
+      --off-white: #FDFCFB;
+      --soft-beige: #E8E4DB;
+      --charcoal: #2C2C2C;
+      --accent-copper: #B8956A;
+      --light-border: rgba(43, 111, 111, 0.15);
+      font-family: 'Wix Madefor Display', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    .charlotte-trigger {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--warm-white);
+      color: var(--warm-white);
+      border: 4px solid var(--reclaim-teal);
+      border-radius: 50%;
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(43, 111, 111, 0.25);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 10000;
+      overflow: hidden;
+    }
+    
+    .charlotte-trigger:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 24px rgba(43, 111, 111, 0.35);
+    }
+    
+    .charlotte-trigger.open {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .charlotte-trigger img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .charlotte-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: min(420px, calc(100vw - 2.5rem));
+      height: min(620px, calc(100vh - 4rem));
+      background: var(--off-white);
+      border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(43, 111, 111, 0.2);
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 10001;
+      overflow: hidden;
+    }
+    
+    .charlotte-container.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: all;
+    }
+
+    .charlotte-header {
+      background: linear-gradient(135deg, var(--reclaim-teal), var(--reclaim-teal-light));
+      color: var(--off-white);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--light-border);
+    }
+    
+    .charlotte-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .charlotte-header-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--warm-white);
+      padding: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .charlotte-header-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .charlotte-header-text h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0;
+    }
+    
+    .charlotte-header-text p {
+      font-size: 0.8rem;
+      opacity: 0.9;
+      margin: 0.15rem 0 0;
+    }
+    
+    .charlotte-close {
+      background: transparent;
+      border: none;
+      color: var(--off-white);
+      font-size: 1.8rem;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      line-height: 1;
+      transition: opacity 0.2s;
+      border-radius: 6px;
+    }
+    
+    .charlotte-close:hover {
+      opacity: 0.8;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .charlotte-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      background: var(--warm-white);
+    }
+    
+    .charlotte-messages::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .charlotte-messages::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .charlotte-messages::-webkit-scrollbar-thumb {
+      background: var(--reclaim-teal);
+      border-radius: 3px;
+    }
+
+    .charlotte-message {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .charlotte-message.user {
+      flex-direction: row-reverse;
+      align-self: flex-end;
+      max-width: 80%;
+    }
+    
+    .charlotte-message.assistant {
+      max-width: 100%;
+    }
+    
+    .charlotte-avatar {
+      min-width: 32px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      background: var(--reclaim-teal);
+      color: var(--off-white);
+    }
+    
+    .charlotte-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    
+    .charlotte-message.user .charlotte-avatar {
+      background: var(--accent-copper);
+    }
+    
+    .charlotte-bubble {
+      background: white;
+      padding: 0.875rem 1.125rem;
+      border-radius: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      line-height: 1.5;
+      font-size: 0.95rem;
+      max-width: 100%;
+      word-wrap: break-word;
+    }
+    
+    .charlotte-message.user .charlotte-bubble {
+      background: var(--reclaim-teal);
+      color: var(--off-white);
+    }
+    
+    .charlotte-time {
+      font-size: 0.7rem;
+      color: var(--charcoal);
+      opacity: 0.5;
+      margin-top: 0.35rem;
+      padding: 0 0.5rem;
+    }
+
+    .charlotte-typing {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    
+    .charlotte-typing:not(.hidden) {
+      opacity: 1;
+    }
+    
+    .charlotte-typing-dots {
+      background: white;
+      padding: 0.875rem 1.125rem;
+      border-radius: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      display: flex;
+      gap: 0.3rem;
+    }
+    
+    .charlotte-typing-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--reclaim-teal);
+      border-radius: 50%;
+      animation: typing 1.4s infinite;
+    }
+    
+    .charlotte-typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    
+    .charlotte-typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    
+    @keyframes typing {
+      0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.4;
+      }
+      30% {
+        transform: translateY(-8px);
+        opacity: 1;
+      }
+    }
+
+    .charlotte-input-area {
+      padding: 1rem 1.5rem;
+      background: var(--off-white);
+      border-top: 1px solid var(--light-border);
+    }
+    
+    .charlotte-input-wrapper {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-end;
+      background: white;
+      border-radius: 1rem;
+      padding: 0.75rem 1rem;
+      box-shadow: 0 2px 8px rgba(43, 111, 111, 0.08);
+      position: relative;
+    }
+
+    .charlotte-file-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .charlotte-attach-btn {
+      background: transparent;
+      border: none;
+      color: var(--reclaim-teal);
+      cursor: pointer;
+      padding: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      border-radius: 0.5rem;
+      font-size: 1.3rem;
+    }
+
+    .charlotte-attach-btn:hover {
+      background: var(--soft-beige);
+    }
+
+    .charlotte-file-input {
+      display: none;
+    }
+
+    .charlotte-file-preview {
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--soft-beige);
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      right: 0;
+      margin-bottom: 0.5rem;
+    }
+
+    .charlotte-file-preview.active {
+      display: flex;
+    }
+
+    .charlotte-file-preview-icon {
+      font-size: 1.2rem;
+    }
+
+    .charlotte-file-preview-name {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--charcoal);
+    }
+
+    .charlotte-file-preview-remove {
+      background: transparent;
+      border: none;
+      color: var(--charcoal);
+      cursor: pointer;
+      padding: 0.25rem;
+      display: flex;
+      align-items: center;
+      font-size: 1rem;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+    }
+
+    .charlotte-file-preview-remove:hover {
+      opacity: 1;
+    }
+
+    .charlotte-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: inherit;
+      font-size: 0.95rem;
+      resize: none;
+      min-height: 24px;
+      max-height: 120px;
+      overflow-y: auto;
+      background: transparent;
+    }
+    
+    .charlotte-input::placeholder {
+      color: var(--charcoal);
+      opacity: 0.4;
+    }
+    
+    .charlotte-send {
+      background: var(--reclaim-teal);
+      color: var(--off-white);
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.5rem 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 600;
+      font-size: 0.9rem;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    
+    .charlotte-send:hover:not(:disabled) {
+      background: var(--reclaim-teal-dark);
+      transform: translateY(-1px);
+    }
+    
+    .charlotte-send:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .charlotte-product-card {
+      background: white;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(43, 111, 111, 0.1);
+      margin: 0.5rem 0;
+    }
+
+    .charlotte-product-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .charlotte-product-info {
+      padding: 1rem;
+    }
+
+    .charlotte-product-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--charcoal);
+      margin-bottom: 0.5rem;
+    }
+
+    .charlotte-product-price {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--reclaim-teal);
+      margin-bottom: 0.75rem;
+    }
+
+    .charlotte-product-description {
+      font-size: 0.9rem;
+      color: var(--charcoal);
+      line-height: 1.5;
+      margin-bottom: 0.75rem;
+    }
+
+    .charlotte-product-details {
+      font-size: 0.85rem;
+      color: var(--charcoal);
+      opacity: 0.8;
+      margin-bottom: 0.4rem;
+    }
+
+    .charlotte-product-link {
+      display: inline-block;
+      margin-top: 0.75rem;
+      padding: 0.625rem 1.25rem;
+      background: var(--reclaim-teal);
+      color: var(--off-white);
+      text-decoration: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .charlotte-product-link:hover {
+      background: var(--reclaim-teal-dark);
+      transform: translateY(-1px);
+    }
+
+    /* File attachment in message */
+    .charlotte-file-attachment {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      background: var(--soft-beige);
+      border-radius: 0.75rem;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .charlotte-file-attachment-icon {
+      font-size: 1.5rem;
+    }
+
+    .charlotte-file-attachment-name {
+      flex: 1;
+      color: var(--charcoal);
+      font-weight: 500;
+    }
+
+    .charlotte-message.user .charlotte-file-attachment {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .charlotte-message.user .charlotte-file-attachment-name {
+      color: var(--off-white);
+    }
+  </style>
+</head>
+
+<body class="charlotte-chatbot-wrapper">
+  <button id="charlotteTrigger" class="charlotte-trigger">
+    <img src="https://cdn.prod.website-files.com/6729e59e0eaa9dcdcf49c92f/67361e49f7e98bbfa64eb3c7_Screenshot%202024-11-14%20at%2017.22.20.png" alt="Charlotte">
+  </button>
+
+  <div id="charlotteContainer" class="charlotte-container">
+    <div class="charlotte-header">
+      <div class="charlotte-header-left">
+        <div class="charlotte-header-logo">
+          <img id="headerLogo" src="https://cdn.prod.website-files.com/6729e59e0eaa9dcdcf49c92f/67361e49f7e98bbfa64eb3c7_Screenshot%202024-11-14%20at%2017.22.20.png" alt="Charlotte">
+        </div>
+        <div class="charlotte-header-text">
+          <h3>Charlotte</h3>
+          <p>Furniture Assistant</p>
+        </div>
+      </div>
+      <button id="charlotteClose" class="charlotte-close">&times;</button>
+    </div>
+
+    <div id="charlotteMessages" class="charlotte-messages">
+      <div class="charlotte-message assistant">
+        <div class="charlotte-avatar" style="background: linear-gradient(135deg, var(--reclaim-teal), var(--reclaim-teal-light)); padding: 4px;">
+          <img src="https://cdn.prod.website-files.com/6729e59e0eaa9dcdcf49c92f/67361e49f7e98bbfa64eb3c7_Screenshot%202024-11-14%20at%2017.22.20.png" alt="Charlotte">
+        </div>
+        <div>
+          <div class="charlotte-bubble">
+            <p>Hello! I'm Charlotte, your furniture assistant. 👋</p>
+            <p style="margin-top: 0.75rem;">I can help you with:</p>
+            <p style="margin-top: 0.5rem;">🛋️ Finding the perfect furniture<br>
+            📦 Order tracking<br>
+            ℹ️ Delivery & returns information<br>
+            📎 Questions about your files or images</p>
+            <p style="margin-top: 0.75rem;">How can I assist you today?</p>
+          </div>
+          <div class="charlotte-time" id="initialTime"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="charlotteTyping" class="charlotte-typing hidden">
+      <div class="charlotte-avatar" style="background: linear-gradient(135deg, var(--reclaim-teal), var(--reclaim-teal-light)); padding: 4px;">
+        <img src="https://cdn.prod.website-files.com/6729e59e0eaa9dcdcf49c92f/67361e49f7e98bbfa64eb3c7_Screenshot%202024-11-14%20at%2017.22.20.png" alt="Charlotte">
+      </div>
+      <div class="charlotte-typing-dots">
+        <span class="charlotte-typing-dot"></span>
+        <span class="charlotte-typing-dot"></span>
+        <span class="charlotte-typing-dot"></span>
+      </div>
+    </div>
+
+    <div class="charlotte-input-area">
+      <div class="charlotte-input-wrapper">
+        <div id="charlotteFilePreview" class="charlotte-file-preview">
+          <span class="charlotte-file-preview-icon">📎</span>
+          <span id="charlotteFileName" class="charlotte-file-preview-name"></span>
+          <button id="charlotteRemoveFile" class="charlotte-file-preview-remove">✕</button>
+        </div>
+        <div class="charlotte-file-actions">
+          <button id="charlotteAttachBtn" class="charlotte-attach-btn" title="Attach file or image">
+            📎
+          </button>
+          <input 
+            type="file" 
+            id="charlotteFileInput" 
+            class="charlotte-file-input"
+            accept="image/*,.pdf,.doc,.docx,.txt,.csv,.xlsx,.xls"
+          >
+        </div>
+        <textarea 
+          id="charlotteInput" 
+          class="charlotte-input" 
+          placeholder="Type your message..."
+          rows="1"
+        ></textarea>
+        <button id="charlotteSend" class="charlotte-send">
+          Send ↗
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    const WEBHOOK = 'https://fwhome.app.n8n.cloud/webhook-test/5b1cec44-bb83-490a-9957-8f56346172b0'; // Replace with your actual webhook URL
+    
+    // ============================================
+    // MARKDOWN PARSING
+    // ============================================
+    
+    function parseMarkdown(text) {
+      if (!text) return '';
+      
+      text = text
+        .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/^#### (.+)$/gm, '<h4>$1</h4>')
+        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+        .replace(/^\* (.+)$/gm, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+        .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>');
+      
+      if (!text.startsWith('<h') && !text.startsWith('<ul') && !text.startsWith('<p>')) {
+        text = '<p>' + text + '</p>';
+      }
+      
+      return text;
+    }
+    
+    function extractProductCard(text) {
+      if (!text) return { isProductCard: false };
+      
+      const nameMatch = text.match(/\*\*(.+?)\*\*/);
+      if (!nameMatch) return { isProductCard: false };
+      
+      const hasPriceOrDescription = text.includes('💷 **Price:**') || text.includes('📝 **Description:**');
+      
+      if (hasPriceOrDescription) {
+        const name = nameMatch[1].trim();
+        
+        const priceMatch = text.match(/💷\s*\*\*Price:\*\*\s*£?(\d+(?:,\d{3})*(?:\.\d{2})?)/);
+        const price = priceMatch ? priceMatch[1] : '';
+        
+        const descMatch = text.match(/📝\s*\*\*Description:\*\*\s*(.+?)(?=\n|📏|🚚|\[|$)/);
+        const description = descMatch ? descMatch[1].trim() : '';
+        
+        const dimMatch = text.match(/📏\s*\*\*Dimensions:\*\*\s*(.+?)(?=\n|🚚|\[|$)/);
+        const dimensions = dimMatch ? dimMatch[1].trim() : '';
+        
+        const delMatch = text.match(/🚚\s*\*\*Delivery:\*\*\s*(.+?)(?=\n|\[|$)/);
+        const delivery = delMatch ? delMatch[1].trim() : '';
+        
+        const urlMatch = text.match(/\[View Product\]\((.+?)\)/);
+        const url = urlMatch ? urlMatch[1].trim() : '';
+        
+        const imgMatch = text.match(/!\[([^\]]*)\]\((.+?)\)/);
+        const imgUrl = imgMatch ? imgMatch[2].trim() : '';
+        const imgAlt = imgMatch ? imgMatch[1].trim() : name;
+        
+        const cardStartIdx = text.indexOf('**' + name);
+        const beforeCard = text.substring(0, cardStartIdx).trim();
+        
+        let afterCard = '';
+        if (imgMatch) {
+          const imgEndIdx = text.indexOf(imgMatch[0]) + imgMatch[0].length;
+          afterCard = text.substring(imgEndIdx).trim();
+        } else if (urlMatch) {
+          const urlEndIdx = text.indexOf(urlMatch[0]) + urlMatch[0].length;
+          afterCard = text.substring(urlEndIdx).trim();
+        }
+        
+        return {
+          isProductCard: true,
+          card: {
+            name,
+            price,
+            description,
+            dimensions,
+            delivery,
+            url,
+            image: imgUrl,
+            imageAlt: imgAlt
+          },
+          beforeText: beforeCard,
+          afterText: afterCard
+        };
+      }
+      
+      return { isProductCard: false };
+    }
+    
+    function createProductCardHTML(card) {
+      return `
+        <div class="charlotte-product-card">
+          ${card.image ? `<img src="${card.image}" alt="${card.imageAlt}" class="charlotte-product-image" onerror="this.style.display='none';">` : ''}
+          <div class="charlotte-product-info">
+            <div class="charlotte-product-name">${card.name}</div>
+            ${card.price ? `<div class="charlotte-product-price">£${card.price}</div>` : ''}
+            ${card.description ? `<div class="charlotte-product-description">${card.description}</div>` : ''}
+            ${card.dimensions ? `<div class="charlotte-product-details">📏 ${card.dimensions}</div>` : ''}
+            ${card.delivery ? `<div class="charlotte-product-details">🚚 ${card.delivery}</div>` : ''}
+            ${card.url ? `<a href="${card.url}" target="_blank" rel="noopener noreferrer" class="charlotte-product-link">View Product →</a>` : ''}
+          </div>
+        </div>
+      `;
+    }
+    
+    // ============================================
+    // SESSION MANAGEMENT
+    // ============================================
+    
+    function generateSessionId() {
+      return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    function getSessionId() {
+      let sessionId = localStorage.getItem('charlotte_session_id');
+      if (!sessionId) {
+        sessionId = generateSessionId();
+        localStorage.setItem('charlotte_session_id', sessionId);
+        localStorage.setItem('charlotte_session_created', new Date().toISOString());
+      }
+      return sessionId;
+    }
+    
+    function clearSession() {
+      localStorage.removeItem('charlotte_session_id');
+      localStorage.removeItem('charlotte_session_created');
+      localStorage.removeItem('charlotte_message_count');
+    }
+    
+    window.charlotteDebug = {
+      getSession: getSessionId,
+      clearSession: clearSession,
+      info: function() {
+        console.log('Session ID:', getSessionId());
+        console.log('Created:', localStorage.getItem('charlotte_session_created'));
+        console.log('Messages:', localStorage.getItem('charlotte_message_count') || 0);
+      }
+    };
+    
+    // ============================================
+    // FILE HANDLING
+    // ============================================
+    
+    let attachedFile = null;
+    
+    function getFileIcon(fileName) {
+      const ext = fileName.split('.').pop().toLowerCase();
+      const icons = {
+        'pdf': '📄',
+        'doc': '📝',
+        'docx': '📝',
+        'txt': '📝',
+        'csv': '📊',
+        'xlsx': '📊',
+        'xls': '📊',
+        'jpg': '🖼️',
+        'jpeg': '🖼️',
+        'png': '🖼️',
+        'gif': '🖼️',
+        'webp': '🖼️'
+      };
+      return icons[ext] || '📎';
+    }
+    
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+    
+    // ============================================
+    // CHAT FUNCTIONALITY
+    // ============================================
+    
+    const trigger = document.getElementById('charlotteTrigger');
+    const container = document.getElementById('charlotteContainer');
+    const closeBtn = document.getElementById('charlotteClose');
+    const messages = document.getElementById('charlotteMessages');
+    const input = document.getElementById('charlotteInput');
+    const sendBtn = document.getElementById('charlotteSend');
+    const typing = document.getElementById('charlotteTyping');
+    const attachBtn = document.getElementById('charlotteAttachBtn');
+    const fileInput = document.getElementById('charlotteFileInput');
+    const filePreview = document.getElementById('charlotteFilePreview');
+    const fileName = document.getElementById('charlotteFileName');
+    const removeFileBtn = document.getElementById('charlotteRemoveFile');
+    
+    let isOpen = false, isLoading = false;
+    
+    document.getElementById('initialTime').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+    getSessionId();
+    
+    function toggle() {
+      isOpen = !isOpen;
+      container.classList.toggle('open');
+      trigger.classList.toggle('open');
+      if (isOpen) input.focus();
+    }
+    
+    trigger.addEventListener('click', toggle);
+    closeBtn.addEventListener('click', toggle);
+    
+    // File attachment handlers
+    attachBtn.addEventListener('click', () => {
+      fileInput.click();
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        // Check file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+          alert('File size must be less than 10MB');
+          fileInput.value = '';
+          return;
+        }
+        
+        attachedFile = file;
+        fileName.textContent = file.name;
+        filePreview.classList.add('active');
+      }
+    });
+    
+    removeFileBtn.addEventListener('click', () => {
+      attachedFile = null;
+      fileInput.value = '';
+      filePreview.classList.remove('active');
+    });
+    
+    function addMessage(content, role = 'assistant', file = null) {
+      const div = document.createElement('div');
+      div.className = `charlotte-message ${role}`;
+      const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+
+      const logoUrl = document.getElementById('headerLogo').src;
+      const avatarContent = role === 'assistant'
+        ? `<img src="${logoUrl}" alt="Charlotte">`
+        : 'Y';
+
+      let messageHTML = '';
+      
+      if (role === 'assistant') {
+        const result = extractProductCard(content);
+        
+        if (result.isProductCard) {
+          if (result.beforeText) {
+            const parsed = parseMarkdown(result.beforeText);
+            messageHTML += `<div class="charlotte-bubble">${parsed}</div>`;
+          }
+          
+          messageHTML += createProductCardHTML(result.card);
+          
+          if (result.afterText) {
+            const parsed = parseMarkdown(result.afterText);
+            messageHTML += `<div class="charlotte-bubble">${parsed}</div>`;
+          }
+        } else {
+          messageHTML = `<div class="charlotte-bubble">${parseMarkdown(content)}</div>`;
+        }
+      } else {
+        messageHTML = `<div class="charlotte-bubble">${content}</div>`;
+        
+        // Add file attachment display for user messages
+        if (file) {
+          messageHTML += `
+            <div class="charlotte-file-attachment">
+              <span class="charlotte-file-attachment-icon">${getFileIcon(file.name)}</span>
+              <span class="charlotte-file-attachment-name">${file.name}</span>
+            </div>
+          `;
+        }
+      }
+
+      div.innerHTML = `
+        <div class="charlotte-avatar" style="${role === 'assistant'
+          ? 'background: linear-gradient(135deg, var(--reclaim-teal), var(--reclaim-teal-light)); padding: 4px;'
+          : ''}">
+          ${avatarContent}
+        </div>
+        <div>
+          ${messageHTML}
+          <div class="charlotte-time">${time}</div>
+        </div>
+      `;
+
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+      
+      if (role === 'user') {
+        const count = parseInt(localStorage.getItem('charlotte_message_count') || '0');
+        localStorage.setItem('charlotte_message_count', count + 1);
+      }
+    }
+    
+    async function send() {
+      const text = input.value.trim();
+      if ((!text && !attachedFile) || isLoading) return;
+      
+      const messageText = text || 'I\'ve attached a file';
+      const fileToSend = attachedFile;
+      
+      addMessage(messageText, 'user', fileToSend);
+      input.value = '';
+      input.style.height = 'auto';
+      
+      isLoading = true;
+      typing.classList.remove('hidden');
+      sendBtn.disabled = true;
+      input.disabled = true;
+      messages.scrollTop = messages.scrollHeight;
+      
+      const sessionId = getSessionId();
+      const payload = {
+        message: text,
+        sessionId: sessionId,
+        timestamp: new Date().toISOString()
+      };
+      
+      // Add file data if attached
+      if (fileToSend) {
+        try {
+          const base64Data = await fileToBase64(fileToSend);
+          payload.file = {
+            name: fileToSend.name,
+            type: fileToSend.type,
+            size: fileToSend.size,
+            data: base64Data
+          };
+        } catch (err) {
+          console.error('Error reading file:', err);
+        }
+      }
+      
+      // Clear attached file
+      if (attachedFile) {
+        attachedFile = null;
+        fileInput.value = '';
+        filePreview.classList.remove('active');
+      }
+      
+      try {
+        const res = await fetch(WEBHOOK, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        
+        if (!res.ok) {
+          throw new Error(`Network error: ${res.status}`);
+        }
+        
+        const data = await res.json();
+        typing.classList.add('hidden');
+        
+        const reply = data.output || data.reply || data.response || data.message || data.text || '';
+        
+        if (!reply || reply.trim() === '') {
+          addMessage('I received your message but had trouble formatting the response. Please try again.', 'assistant');
+        } else {
+          addMessage(reply, 'assistant');
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        typing.classList.add('hidden');
+        addMessage("I'm having trouble connecting right now. Please try again in a moment.", 'assistant');
+      } finally {
+        isLoading = false;
+        sendBtn.disabled = false;
+        input.disabled = false;
+        input.focus();
+      }
+    }
+    
+    sendBtn.addEventListener('click', send);
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        send();
+      }
+    });
+    input.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+    
+    console.log('✅ Charlotte ready with file upload!');
+  })();
+  </script>
+
+</body>
+</html>
