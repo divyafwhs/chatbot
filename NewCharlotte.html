@@ -113,7 +113,7 @@
     .charlotte-trigger img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
     }
 
     .charlotte-container {
@@ -122,7 +122,7 @@
       right: 2rem;
       width: min(420px, calc(100vw - 2.5rem));
       height: min(620px, calc(100vh - 4rem));
-      background: var(--off-white);
+      background: var(--warm-white);
       border-radius: 16px;
       box-shadow: 0 8px 40px rgba(43, 111, 111, 0.2);
       display: flex;
@@ -171,7 +171,7 @@
     .charlotte-header-logo img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
     }
     
     .charlotte-header-text h3 {
@@ -271,12 +271,12 @@
     .charlotte-avatar img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       border-radius: 50%;
     }
     
     .charlotte-message.user .charlotte-avatar {
-      background: var(--accent-copper);
+      background: var(--reclaim-teal);
     }
     
     .charlotte-bubble {
@@ -353,18 +353,18 @@
     }
 
     .charlotte-input-area {
-      padding: 1rem 1.5rem;
-      background: var(--off-white);
-      border-top: 1px solid var(--light-border);
+      padding: 0.5rem 1rem 0.6rem;
+      background: var(--warm-white);
+      border-top: none;
     }
     
     .charlotte-input-wrapper {
       display: flex;
-      gap: 0.75rem;
+      gap: 0.5rem;
       align-items: flex-end;
       background: white;
-      border-radius: 1rem;
-      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      padding: 0.4rem 0.75rem;
       box-shadow: 0 2px 8px rgba(43, 111, 111, 0.08);
       position: relative;
     }
@@ -580,21 +580,23 @@
     }
 
     .charlotte-message.user .charlotte-file-attachment-name {
-      color: var(--off-white);
+      color: var(--charcoal);
     }
   </style>
 </head>
 
-<body class="charlotte-chatbot-wrapper">
+<body>
+
+  <div class="charlotte-chatbot-wrapper">
   <button id="charlotteTrigger" class="charlotte-trigger">
-    <img src="https://cdn.prod.website-files.com/6729e59e0eaa9dcdcf49c92f/67361e49f7e98bbfa64eb3c7_Screenshot%202024-11-14%20at%2017.22.20.png" alt="Charlotte">
+    <img src="https://i.postimg.cc/4yhWxnWp/15._R_GREEN_CIRCLE_2x.png" alt="Charlotte" class="charlotte-logo-img">
   </button>
 
   <div id="charlotteContainer" class="charlotte-container">
     <div class="charlotte-header">
       <div class="charlotte-header-left">
         <div class="charlotte-header-logo">
-          <img id="headerLogo" src="https://cdn.prod.website-files.com/6729e59e0eaa9dcdcf49c92f/67361e49f7e98bbfa64eb3c7_Screenshot%202024-11-14%20at%2017.22.20.png" alt="Charlotte">
+          <img id="headerLogo" src="https://i.postimg.cc/4yhWxnWp/15._R_GREEN_CIRCLE_2x.png" alt="Charlotte" class="charlotte-logo-img">
         </div>
         <div class="charlotte-header-text">
           <h3>Charlotte</h3>
@@ -607,16 +609,13 @@
     <div id="charlotteMessages" class="charlotte-messages">
       <div class="charlotte-message assistant">
         <div class="charlotte-avatar" style="background: linear-gradient(135deg, var(--reclaim-teal), var(--reclaim-teal-light)); padding: 4px;">
-          <img src="https://cdn.prod.website-files.com/6729e59e0eaa9dcdcf49c92f/67361e49f7e98bbfa64eb3c7_Screenshot%202024-11-14%20at%2017.22.20.png" alt="Charlotte">
+          <img src="https://i.postimg.cc/4yhWxnWp/15._R_GREEN_CIRCLE_2x.png" alt="Charlotte" class="charlotte-logo-img">
         </div>
         <div>
           <div class="charlotte-bubble">
-            <p>Hello! I'm Charlotte, your furniture assistant. 👋</p>
+            <p>Hello! I'm Charlotte, your furniture assistant.</p>
             <p style="margin-top: 0.75rem;">I can help you with:</p>
-            <p style="margin-top: 0.5rem;">🛋️ Finding the perfect furniture<br>
-            📦 Order tracking<br>
-            ℹ️ Delivery & returns information<br>
-            📎 Questions about your files or images</p>
+            <p style="margin-top: 0.5rem;">Finding the perfect furniture,&nbsp; Order tracking, Product Queries, Delivery &amp; returns information, Any FAQs</p>
             <p style="margin-top: 0.75rem;">How can I assist you today?</p>
           </div>
           <div class="charlotte-time" id="initialTime"></div>
@@ -626,7 +625,7 @@
 
     <div id="charlotteTyping" class="charlotte-typing hidden">
       <div class="charlotte-avatar" style="background: linear-gradient(135deg, var(--reclaim-teal), var(--reclaim-teal-light)); padding: 4px;">
-        <img src="https://cdn.prod.website-files.com/6729e59e0eaa9dcdcf49c92f/67361e49f7e98bbfa64eb3c7_Screenshot%202024-11-14%20at%2017.22.20.png" alt="Charlotte">
+        <img src="https://i.postimg.cc/4yhWxnWp/15._R_GREEN_CIRCLE_2x.png" alt="Charlotte" class="charlotte-logo-img">
       </div>
       <div class="charlotte-typing-dots">
         <span class="charlotte-typing-dot"></span>
@@ -644,7 +643,7 @@
         </div>
         <div class="charlotte-file-actions">
           <button id="charlotteAttachBtn" class="charlotte-attach-btn" title="Attach file or image">
-            📎
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
           </button>
           <input 
             type="file" 
@@ -666,9 +665,25 @@
     </div>
   </div>
 
+  </div><!-- end charlotte-chatbot-wrapper -->
+
   <script>
   (function() {
-    const WEBHOOK = 'https://fwhome.app.n8n.cloud/webhook/5b1cec44-bb83-490a-9957-8f56346172b0'; // Replace with your actual webhook URL
+    const WEBHOOK = 'https://fwhome.app.n8n.cloud/webhook/5b1cec44-bb83-490a-9957-8f56346172b0';
+
+    // Image fallback: replace broken logos with "C" initial
+    document.querySelectorAll('.charlotte-logo-img').forEach(function(img) {
+      img.addEventListener('error', function() {
+        var parent = this.parentElement;
+        var isHeader = parent.classList.contains('charlotte-header-logo');
+        var span = document.createElement('span');
+        span.textContent = 'C';
+        span.style.cssText = isHeader
+          ? 'font-weight:800;font-size:1rem;color:var(--reclaim-teal);'
+          : 'font-weight:800;font-size:0.95rem;color:#fff;';
+        parent.replaceChild(span, this);
+      });
+    });
     
     // ============================================
     // MARKDOWN PARSING
@@ -910,7 +925,7 @@
 
       const logoUrl = document.getElementById('headerLogo').src;
       const avatarContent = role === 'assistant'
-        ? `<img src="${logoUrl}" alt="Charlotte">`
+        ? `<img src="${logoUrl}" alt="Charlotte" class="charlotte-logo-img">`
         : 'Y';
 
       let messageHTML = '';
